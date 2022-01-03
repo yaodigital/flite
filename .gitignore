@@ -1,0 +1,10 @@
+build
+bin
+main/*.o
+main/flite*list.c
+tools/*.o
+*.wasm
+config.log
+config.status
+config/config
+config/system.mak
