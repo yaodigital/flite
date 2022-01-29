@@ -694,15 +694,23 @@ static cst_val *us_tokentowords_one(cst_item *token, const char *name)
     else if ((p=(cst_strrchr(name,'\''))))
     {
 	//static const char * const pc[] = { "'s", "'ll", "'ve", "'d", NULL };
-    static const char * const pc[] = {NULL };
+    static const char * const pc[] = {"'s", NULL };
 
 	bbb = cst_downcase(p);
 	if (cst_member_string(bbb, pc))
 	{
 	    aaa = cst_strdup(name);
-	    //aaa[cst_strlen(name)-cst_strlen(p)] = '\0';
-	    r = val_append(us_tokentowords_one(token,aaa),
-			   cons_val(string_val(bbb),0));
+	    aaa[cst_strlen(name)-cst_strlen(p)] = '\0';
+
+        //Original code
+	    //r = val_append(us_tokentowords_one(token,aaa),
+		//	   cons_val(string_val(bbb),0));
+
+        //Riffit code (concatenates possesive apostrophe back on to last list value)
+        r = us_tokentowords_one(token,aaa);
+        cst_val *t;
+	    for (t=r; val_cdr(t); t=CST_VAL_CDR(t));
+        CST_VAL_CAR(t) = string_val(cst_strcat(val_string(CST_VAL_CAR(t)), bbb));
 	    cst_free(aaa);
 	}
 	else if (cst_streq(p,"'tve")) /* admittedly rare and weird */
