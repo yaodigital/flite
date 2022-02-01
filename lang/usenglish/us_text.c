@@ -678,8 +678,17 @@ static cst_val *us_tokentowords_one(cst_item *token, const char *name)
     {   /* 60s and 7s and 9s */
 	aaa = cst_strdup(name);
 	aaa[cst_strlen(name)-1] = '\0';
-        r = val_append(us_tokentowords_one(token,aaa),
-                       cons_val(string_val("'s"),0));
+
+        //Original code
+        /*r = val_append(us_tokentowords_one(token,aaa),
+                       cons_val(string_val("'s"),0));*/
+        
+        //Riffit code (concatenates 's' back on to last list value)
+        r = us_tokentowords_one(token,aaa);
+        cst_val *t;
+	    for (t=r; val_cdr(t); t=CST_VAL_CDR(t));
+        CST_VAL_CAR(t) = string_val(cst_strcat(val_string(CST_VAL_CAR(t)), "s"));
+
 	cst_free(aaa);
     }
     else if (contains_unicode_single_quote(name))
